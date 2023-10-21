@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Prometheus;
+using Prometheus.DotNetRuntime;
 using WbGateway.Implementations;
 using WbGateway.Interfaces;
 
@@ -59,5 +60,14 @@ public class Startup
             endpoints.MapControllers();
             endpoints.MapMetrics();
         });
+        
+        DotNetRuntimeStatsBuilder.Customize()
+            .WithContentionStats()
+            .WithExceptionStats(CaptureLevel.Errors)
+            .WithGcStats()
+            .WithJitStats()
+            .WithSocketStats()
+            .WithThreadPoolStats()
+            .StartCollecting(Metrics.DefaultRegistry);
     }
 }
