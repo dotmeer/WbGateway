@@ -21,12 +21,15 @@ internal sealed class Zigbee2MqttBackgroundJob : IHostedService
     private readonly ILogger<Zigbee2MqttBackgroundJob> _logger;
 
     private readonly ConcurrentDictionary<string, IMqttClient> _mqttClients;
-    
+
+    private readonly IDictionary<string, string?> _cachedValues;
+
     public Zigbee2MqttBackgroundJob(IMqttClientFactory mqttClientFactory, ILogger<Zigbee2MqttBackgroundJob> logger)
     {
         _mqttClientFactory = mqttClientFactory;
         _logger = logger;
         _mqttClients = new ConcurrentDictionary<string, IMqttClient>(StringComparer.OrdinalIgnoreCase);
+        _cachedValues = new ConcurrentDictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -81,17 +84,38 @@ internal sealed class Zigbee2MqttBackgroundJob : IHostedService
                     if (client.IsConnected)
                     {
                         var topicValue = ToString(value.Value, value.Key);
+                        var send = true;
 
-                        var message = new MqttApplicationMessageBuilder()
-                            .WithTopic(topic)
-                            .WithPayload(topicValue)
-                            .WithRetainFlag()
-                            .Build();
+                        if (_cachedValues.TryGetValue(topic, out var cachedValue))
+                        {
+                            if (cachedValue == topicValue)
+                            {
+                                send = false;
+                            }
+                            else
+                            {
+                                send = true;
+                                _cachedValues[topic] = topicValue;
+                            }
+                        }
+                        else
+                        {
+                            _cachedValues.Add(topic, topicValue);
+                        }
 
-                        await client.PublishAsync(message, cancellationToken);
+                        if(send)
+                        {
+                            var message = new MqttApplicationMessageBuilder()
+                                .WithTopic(topic)
+                                .WithPayload(topicValue)
+                                .WithRetainFlag()
+                                .Build();
 
-                        _logger.LogInformation("Topic '{Topic}' with value {Value}",
-                            topic, topicValue);
+                            await client.PublishAsync(message, cancellationToken);
+
+                            _logger.LogInformation("Topic '{Topic}' with value {Value}",
+                                topic, topicValue);
+                        }
                     }
                     else
                     {
