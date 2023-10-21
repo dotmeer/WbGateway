@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
 using Newtonsoft.Json.Linq;
+using Prometheus;
 using WbGateway.Interfaces;
 
 namespace WbGateway.Implementations;
@@ -102,6 +103,13 @@ internal sealed class Zigbee2MqttBackgroundJob : IHostedService
                     _logger.LogError(ex, "Error while processing topic {Topic}", topic);
                 }
             }
+
+            Metrics.CreateCounter(
+                    "zigbee2mqtt_read",
+                    "Message from zigbee2mqtt was read",
+                    "friendly_name")
+                .WithLabels(friendlyName)
+                .Inc();
         }
     }
 
