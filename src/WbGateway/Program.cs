@@ -33,6 +33,7 @@ public class Program
                     .UseKestrel(options =>
                     {
                         options.Listen(IPAddress.Any, 8000);
+                        options.Listen(IPAddress.Any, 8001, _ => _.UseHttps());
                     })
                     .UseStartup<Startup>();
             })
