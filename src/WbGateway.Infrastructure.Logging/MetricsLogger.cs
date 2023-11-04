@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using Prometheus;
 
 namespace WbGateway.Infrastructure.Logging;
