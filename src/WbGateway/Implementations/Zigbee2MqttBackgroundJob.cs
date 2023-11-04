@@ -83,7 +83,7 @@ internal sealed class Zigbee2MqttBackgroundJob : IHostedService
 
                     if (client.IsConnected)
                     {
-                        var topicValue = Convert.ToString(value.Value, CultureInfo.InvariantCulture);
+                        var topicValue = value.Value.ToString();
                         var send = true;
 
                         if (_cachedValues.TryGetValue(topic, out var cachedValue))
