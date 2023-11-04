@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
-using Prometheus;
+using WbGateway.Infrastructure.Metrics.Abstractions;
 using WbGateway.Interfaces;
 
 namespace WbGateway.Implementations;
@@ -20,14 +19,20 @@ internal sealed class Zigbee2MqttBackgroundJob : IHostedService
 
     private readonly ILogger<Zigbee2MqttBackgroundJob> _logger;
 
+    private readonly IMetricsService _metricsService;
+
     private readonly ConcurrentDictionary<string, IMqttClient> _mqttClients;
 
     private readonly IDictionary<string, string?> _cachedValues;
 
-    public Zigbee2MqttBackgroundJob(IMqttClientFactory mqttClientFactory, ILogger<Zigbee2MqttBackgroundJob> logger)
+    public Zigbee2MqttBackgroundJob(
+        IMqttClientFactory mqttClientFactory,
+        ILogger<Zigbee2MqttBackgroundJob> logger,
+        IMetricsService metricsService)
     {
         _mqttClientFactory = mqttClientFactory;
         _logger = logger;
+        _metricsService = metricsService;
         _mqttClients = new ConcurrentDictionary<string, IMqttClient>(StringComparer.OrdinalIgnoreCase);
         _cachedValues = new ConcurrentDictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
     }
@@ -56,7 +61,7 @@ internal sealed class Zigbee2MqttBackgroundJob : IHostedService
 
         return Task.CompletedTask;
     }
-    
+
     private async Task MqttDeviceMessageHandler(
         MqttApplicationMessageReceivedEventArgs deviceArgs,
         CancellationToken cancellationToken)
@@ -103,7 +108,7 @@ internal sealed class Zigbee2MqttBackgroundJob : IHostedService
                             _cachedValues.Add(topic, topicValue);
                         }
 
-                        if(send)
+                        if (send)
                         {
                             var message = new MqttApplicationMessageBuilder()
                                 .WithTopic(topic)
@@ -128,12 +133,13 @@ internal sealed class Zigbee2MqttBackgroundJob : IHostedService
                 }
             }
 
-            Metrics.CreateCounter(
-                    "zigbee2mqtt_read",
-                    "Message from zigbee2mqtt was read",
-                    "friendly_name")
-                .WithLabels(friendlyName)
-                .Inc();
+            _metricsService.IncrementCounter(
+                "zigbee2mqtt_read",
+                new Dictionary<string, string>
+                {
+                    ["friendly_name"] = friendlyName
+                },
+                "Message from zigbee2mqtt was read");
         }
     }
 }

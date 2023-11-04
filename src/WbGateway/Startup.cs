@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using Prometheus;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using WbGateway.Implementations;
+using WbGateway.Infrastructure.Metrics;
 using WbGateway.Interfaces;
 
 namespace WbGateway;
@@ -23,6 +23,8 @@ public class Startup
                 _.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
 
+        services.AddMetrics();
+
         services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "Default", Version = "v1" });
@@ -35,7 +37,7 @@ public class Startup
 
         services.AddSingleton<IMqttClientFactory, MqttClientFactory>();
         services.AddHostedService<Zigbee2MqttBackgroundJob>();
-        services.AddHostedService<MqttToPrometheusBackgroundJob>();
+        services.AddHostedService<MqttTopicsMetricsBackgroundJob>();
         //services.AddHostedService<TestMqttBackgroundJob>();
     }
 
@@ -49,13 +51,12 @@ public class Startup
             swaggerUiOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "API");
             swaggerUiOptions.DisplayRequestDuration();
         });
-
         app.UseRouting();
 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
-            endpoints.MapMetrics();
+            endpoints.AddMetricsPullHost();
         });
     }
 }

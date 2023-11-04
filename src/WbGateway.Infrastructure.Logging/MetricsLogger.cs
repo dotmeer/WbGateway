@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using Prometheus;
+using WbGateway.Infrastructure.Metrics.Abstractions;
 
 namespace WbGateway.Infrastructure.Logging;
 
 internal sealed class MetricsLogger : ILogger
 {
-    private readonly Counter _logEventCounter = Metrics.CreateCounter(
-        "log_event",
-        "Log event",
-        "level");
+    private readonly IMetricsService _metricsService;
+
+    public MetricsLogger(IMetricsService metricsService)
+    {
+        _metricsService = metricsService;
+    }
 
     public void Log<TState>(
         LogLevel logLevel,
@@ -18,9 +21,13 @@ internal sealed class MetricsLogger : ILogger
         Exception? exception,
         Func<TState, Exception, string> formatter)
     {
-        _logEventCounter
-            .WithLabels(logLevel.ToString())
-            .Inc();
+        _metricsService.IncrementCounter(
+            "log_event",
+            new Dictionary<string, string>
+            {
+                ["level"] = logLevel.ToString()
+            },
+            "Log event");
     }
 
     public bool IsEnabled(LogLevel logLevel) => true;

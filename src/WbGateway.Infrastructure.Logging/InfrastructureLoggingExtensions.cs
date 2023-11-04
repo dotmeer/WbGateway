@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace WbGateway.Infrastructure.Logging;
 
-public static class LoggingBuilderExtensions
+public static class InfrastructureLoggingExtensions
 {
     public static ILoggingBuilder AddMetricsLogger(
         this ILoggingBuilder builder)
