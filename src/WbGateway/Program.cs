@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WbGateway.Infrastructure.Logging;
 
 namespace WbGateway;
 
@@ -21,10 +22,7 @@ public class Program
                     .AddEnvironmentVariables()
                     .Build();
             })
-            .ConfigureLogging(builder =>
-            {
-                builder.AddConsole();
-            })
+            .SetupLogging()
             .UseDefaultServiceProvider(serviceProviderOptions =>
             {
                 serviceProviderOptions.ValidateScopes = true;
