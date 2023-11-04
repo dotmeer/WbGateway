@@ -2,13 +2,13 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
-using Newtonsoft.Json.Linq;
 using Prometheus;
 using WbGateway.Interfaces;
 
@@ -65,7 +65,7 @@ internal sealed class Zigbee2MqttBackgroundJob : IHostedService
         var friendlyName = sourceTopic[1];
         var deviceMessagePayload = deviceArgs.ApplicationMessage.ConvertPayloadToString();
 
-        var zigbeeMessage = JObject.Parse(deviceMessagePayload).ToObject<IDictionary<string, object>>();
+        var zigbeeMessage = JsonSerializer.Deserialize<IDictionary<string, object>>(deviceMessagePayload);
 
         if (zigbeeMessage is not null)
         {
@@ -83,7 +83,7 @@ internal sealed class Zigbee2MqttBackgroundJob : IHostedService
 
                     if (client.IsConnected)
                     {
-                        var topicValue = ToString(value.Value, value.Key);
+                        var topicValue = value.Value.ToString();
                         var send = true;
 
                         if (_cachedValues.TryGetValue(topic, out var cachedValue))
@@ -135,14 +135,5 @@ internal sealed class Zigbee2MqttBackgroundJob : IHostedService
                 .WithLabels(friendlyName)
                 .Inc();
         }
-    }
-
-    private string? ToString(object value, string valueKey)
-    {
-        return valueKey switch
-        {
-            "last_seen" => ((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss"),
-            _ => Convert.ToString(value, CultureInfo.InvariantCulture)
-        };
     }
 }

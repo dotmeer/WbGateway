@@ -21,7 +21,10 @@ public class Program
                     .AddEnvironmentVariables()
                     .Build();
             })
-            .ConfigureLogging(builder => builder.AddConsole())
+            .ConfigureLogging(builder =>
+            {
+                builder.AddConsole();
+            })
             .UseDefaultServiceProvider(serviceProviderOptions =>
             {
                 serviceProviderOptions.ValidateScopes = true;

@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Prometheus;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using WbGateway.Implementations;
 using WbGateway.Interfaces;
 
@@ -17,11 +17,10 @@ public class Startup
         services
             .AddControllers()
             .AddControllersAsServices()
-            .AddNewtonsoftJson(_ =>
+            .AddJsonOptions(_ =>
             {
-                _.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffK";
-                _.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                _.SerializerSettings.Converters.Add(new StringEnumConverter());
+                _.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+                _.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
 
         services.AddSwaggerGen(options =>
@@ -31,7 +30,6 @@ public class Startup
             options.UseAllOfToExtendReferenceSchemas();
             options.SupportNonNullableReferenceTypes();
         });
-        services.AddSwaggerGenNewtonsoftSupport();
 
         services.AddRouting(options => { options.AppendTrailingSlash = true; });
 
