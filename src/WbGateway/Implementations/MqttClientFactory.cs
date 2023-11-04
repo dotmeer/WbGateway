@@ -74,7 +74,7 @@ internal sealed class MqttClientFactory : IMqttClientFactory
     private MqttClientOptions CreateOptions(string clientName)
     {
         return new MqttClientOptionsBuilder()
-            .WithClientId($"WbGateway_{clientName}")
+            .WithClientId($"{_configuration["MqttClientPrefix"]}_{clientName}")
             .WithTcpServer(_configuration["mqtt_host"], 1883)
             .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
             .WithCleanSession()
