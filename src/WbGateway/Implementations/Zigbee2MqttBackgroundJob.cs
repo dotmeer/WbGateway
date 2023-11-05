@@ -6,69 +6,47 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MQTTnet;
-using MQTTnet.Client;
 using WbGateway.Infrastructure.Metrics.Abstractions;
-using WbGateway.Interfaces;
+using WbGateway.Infrastructure.Mqtt.Abstractions;
 
 namespace WbGateway.Implementations;
 
-internal sealed class Zigbee2MqttBackgroundJob : IHostedService
+internal sealed class Zigbee2MqttBackgroundJob : BackgroundService
 {
-    private readonly IMqttClientFactory _mqttClientFactory;
-
     private readonly ILogger<Zigbee2MqttBackgroundJob> _logger;
 
     private readonly IMetricsService _metricsService;
 
-    private readonly ConcurrentDictionary<string, IMqttClient> _mqttClients;
+    private readonly IMqttService _mqttService;
 
     private readonly IDictionary<string, string?> _cachedValues;
 
     public Zigbee2MqttBackgroundJob(
-        IMqttClientFactory mqttClientFactory,
         ILogger<Zigbee2MqttBackgroundJob> logger,
-        IMetricsService metricsService)
+        IMetricsService metricsService, 
+        IMqttService mqttService)
     {
-        _mqttClientFactory = mqttClientFactory;
         _logger = logger;
         _metricsService = metricsService;
-        _mqttClients = new ConcurrentDictionary<string, IMqttClient>(StringComparer.OrdinalIgnoreCase);
+        _mqttService = mqttService;
         _cachedValues = new ConcurrentDictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var topic = "zigbee2mqtt/+";
-
-        var mqttClient = await _mqttClientFactory.CreateAndSubscribeAsync(
-            topic,
-            new MqttTopicFilterBuilder()
-                .WithTopic(topic)
-                .Build(),
-            args => MqttDeviceMessageHandler(args, cancellationToken),
-            cancellationToken);
-
-        _mqttClients[topic] = mqttClient;
+        return _mqttService.SubscribeAsync(
+            new QueueConnection("zigbee2mqtt/+"),
+            (message, token) => ReceivedMessageHandler(message, stoppingToken),
+            stoppingToken);
     }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        foreach (var mqttClient in _mqttClients.Values)
-        {
-            mqttClient.Dispose();
-        }
-
-        return Task.CompletedTask;
-    }
-
-    private async Task MqttDeviceMessageHandler(
-        MqttApplicationMessageReceivedEventArgs deviceArgs,
+    
+    private async Task ReceivedMessageHandler(
+        QueueMessage message,
         CancellationToken cancellationToken)
     {
-        var sourceTopic = deviceArgs.ApplicationMessage.Topic.Split("/");
+        var sourceTopic = message.Topic.Split("/");
         var friendlyName = sourceTopic[1];
-        var deviceMessagePayload = deviceArgs.ApplicationMessage.ConvertPayloadToString();
+        var deviceMessagePayload = message.Payload;
 
         var zigbeeMessage = JsonSerializer.Deserialize<IDictionary<string, object>>(deviceMessagePayload);
 
@@ -79,52 +57,35 @@ internal sealed class Zigbee2MqttBackgroundJob : IHostedService
                 var topic = $"wbgateway/{friendlyName}/{value.Key}";
                 try
                 {
-                    if (!_mqttClients.ContainsKey(topic))
+                    var topicValue = value.Value.ToString();
+                    var send = true;
+
+                    if (_cachedValues.TryGetValue(topic, out var cachedValue))
                     {
-                        _mqttClients[topic] = await _mqttClientFactory.CreateMqttClientAsync(topic, cancellationToken);
-                    }
-
-                    var client = _mqttClients[topic];
-
-                    if (client.IsConnected)
-                    {
-                        var topicValue = value.Value.ToString();
-                        var send = true;
-
-                        if (_cachedValues.TryGetValue(topic, out var cachedValue))
+                        if (cachedValue == topicValue)
                         {
-                            if (cachedValue == topicValue)
-                            {
-                                send = false;
-                            }
-                            else
-                            {
-                                send = true;
-                                _cachedValues[topic] = topicValue;
-                            }
+                            send = false;
                         }
                         else
                         {
-                            _cachedValues.Add(topic, topicValue);
-                        }
-
-                        if (send)
-                        {
-                            var message = new MqttApplicationMessageBuilder()
-                                .WithTopic(topic)
-                                .WithPayload(topicValue)
-                                .WithRetainFlag()
-                                .Build();
-
-                            await client.PublishAsync(message, cancellationToken);
-
-                            _logger.LogInformation("Topic '{Topic}' with value {Value}",
-                                topic, topicValue);
+                            send = true;
+                            _cachedValues[topic] = topicValue;
                         }
                     }
                     else
                     {
-                        _logger.LogWarning("Client to topic {Topic} not connected, message lost", topic);
+                        _cachedValues.Add(topic, topicValue);
+                    }
+
+                    if (send && !string.IsNullOrEmpty(topicValue))
+                    {
+                        await _mqttService.PublishAsync(
+                            new QueueConnection(topic),
+                            topicValue,
+                            cancellationToken);
+
+                        _logger.LogInformation("Topic '{Topic}' with value {Value}",
+                            topic, topicValue);
                     }
                 }
                 catch (Exception ex)

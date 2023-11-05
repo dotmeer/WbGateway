@@ -2,53 +2,44 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MQTTnet.Client;
 using System.Threading;
 using System.Threading.Tasks;
-using MQTTnet;
 using WbGateway.Infrastructure.Metrics.Abstractions;
-using WbGateway.Interfaces;
+using WbGateway.Infrastructure.Mqtt.Abstractions;
 
 namespace WbGateway.Implementations;
 
-internal sealed class MqttTopicsMetricsBackgroundJob : IHostedService
+internal sealed class MqttTopicsMetricsBackgroundJob : BackgroundService
 {
-    private readonly IMqttClientFactory _mqttClientFactory;
-
     private readonly ILogger<MqttTopicsMetricsBackgroundJob> _logger;
 
     private readonly IMetricsService _metricsService;
 
-    private IMqttClient? _mqttClient;
+    private readonly IMqttService _mqttService;
 
     public MqttTopicsMetricsBackgroundJob(
-        IMqttClientFactory mqttClientFactory,
         ILogger<MqttTopicsMetricsBackgroundJob> logger,
-        IMetricsService metricsService)
+        IMetricsService metricsService,
+        IMqttService mqttService)
     {
-        _mqttClientFactory = mqttClientFactory;
         _logger = logger;
         _metricsService = metricsService;
-        _mqttClient = null;
+        _mqttService = mqttService;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _mqttClient = await _mqttClientFactory.CreateAndSubscribeAsync(
-            "prometheus",
-            new MqttTopicFilterBuilder()
-                .WithTopic("/devices/+/controls/+")
-                .Build(),
-            args =>
+        return _mqttService.SubscribeAsync(
+            new QueueConnection("/devices/+/controls/+", "prometheus"),
+            (message, token) =>
             {
                 try
                 {
-                    var payload = args.ApplicationMessage.ConvertPayloadToString();
-                    var topic = args.ApplicationMessage.Topic.Split("/", StringSplitOptions.RemoveEmptyEntries);
+                    var topic = message.Topic.Split("/", StringSplitOptions.RemoveEmptyEntries);
                     var deviceName = topic[1];
                     var controlName = topic[3];
 
-                    if (double.TryParse(payload, out var value))
+                    if (double.TryParse(message.Payload, out var value))
                     {
                         _metricsService.SetGauge(
                             "mqtt_topic_values",
@@ -68,14 +59,6 @@ internal sealed class MqttTopicsMetricsBackgroundJob : IHostedService
 
                 return Task.CompletedTask;
             },
-            cancellationToken);
-        ;
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        _mqttClient?.Dispose();
-
-        return Task.CompletedTask;
+            stoppingToken);
     }
 }

@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Infrastructure.Me
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Infrastructure.Metrics.Abstractions", "WbGateway.Infrastructure.Metrics.Abstractions\WbGateway.Infrastructure.Metrics.Abstractions.csproj", "{CF5C9877-0EB7-4F81-9943-A3C4314B3E41}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Infrastructure.Mqtt.Abstractions", "WbGateway.Infrastructure.Mqtt.Abstractions\WbGateway.Infrastructure.Mqtt.Abstractions.csproj", "{29B886F5-500F-4B11-9BA1-157B8B66D05B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Infrastructure.Mqtt", "WbGateway.Infrastructure.Mqtt\WbGateway.Infrastructure.Mqtt.csproj", "{CDFDF486-4F3A-4AF7-BC74-6485AF17504E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{CF5C9877-0EB7-4F81-9943-A3C4314B3E41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF5C9877-0EB7-4F81-9943-A3C4314B3E41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF5C9877-0EB7-4F81-9943-A3C4314B3E41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29B886F5-500F-4B11-9BA1-157B8B66D05B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29B886F5-500F-4B11-9BA1-157B8B66D05B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29B886F5-500F-4B11-9BA1-157B8B66D05B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29B886F5-500F-4B11-9BA1-157B8B66D05B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDFDF486-4F3A-4AF7-BC74-6485AF17504E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDFDF486-4F3A-4AF7-BC74-6485AF17504E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDFDF486-4F3A-4AF7-BC74-6485AF17504E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDFDF486-4F3A-4AF7-BC74-6485AF17504E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

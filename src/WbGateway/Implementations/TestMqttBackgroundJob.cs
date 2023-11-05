@@ -2,50 +2,35 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MQTTnet;
-using MQTTnet.Client;
-using WbGateway.Interfaces;
+using WbGateway.Infrastructure.Mqtt.Abstractions;
 
 namespace WbGateway.Implementations;
 
-internal sealed class TestMqttBackgroundJob : IHostedService
+internal sealed class TestMqttBackgroundJob : BackgroundService
 {
-    private readonly IMqttClientFactory _mqttClientFactory;
-
     private readonly ILogger<TestMqttBackgroundJob> _logger;
 
-    private IMqttClient? _mqttClient;
+    private readonly IMqttService _mqttService;
 
     public TestMqttBackgroundJob(
-        IMqttClientFactory mqttClientFactory, 
-        ILogger<TestMqttBackgroundJob> logger)
+        ILogger<TestMqttBackgroundJob> logger,
+        IMqttService mqttService)
     {
-        _mqttClientFactory = mqttClientFactory;
         _logger = logger;
-        _mqttClient = null;
+        _mqttService = mqttService;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _mqttClient = await _mqttClientFactory.CreateAndSubscribeAsync(
-            "test",
-            new MqttTopicFilterBuilder()
-                .WithTopic("zigbee2mqtt/+")
-                .Build(),
-            args =>
+        return _mqttService.SubscribeAsync(
+            new QueueConnection("zigbee2mqtt/+", "test"),
+            (message, token) =>
             {
                 _logger.LogInformation(
-                    $"{args.ApplicationMessage.Topic}: {args.ApplicationMessage.ConvertPayloadToString()}");
+                    $"{message.Topic}: {message.Payload}");
 
                 return Task.CompletedTask;
             },
-            cancellationToken);
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        _mqttClient?.Dispose();
-
-        return Task.CompletedTask;
+            stoppingToken);
     }
 }

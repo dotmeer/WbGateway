@@ -1,4 +1,6 @@
-﻿namespace WbGateway.Infrastructure.Metrics.Abstractions;
+﻿using System.Collections.Generic;
+
+namespace WbGateway.Infrastructure.Metrics.Abstractions;
 
 public interface IMetricsService
 {

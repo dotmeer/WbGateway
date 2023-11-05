@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using WbGateway.Implementations;
 using WbGateway.Infrastructure.Metrics;
-using WbGateway.Interfaces;
+using WbGateway.Infrastructure.Mqtt;
 
 namespace WbGateway;
 
@@ -23,7 +23,9 @@ public class Startup
                 _.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
 
-        services.AddMetrics();
+        services
+            .AddMetrics()
+            .AddMqtt();
 
         services.AddSwaggerGen(options =>
         {
@@ -35,7 +37,6 @@ public class Startup
 
         services.AddRouting(options => { options.AppendTrailingSlash = true; });
 
-        services.AddSingleton<IMqttClientFactory, MqttClientFactory>();
         services.AddHostedService<Zigbee2MqttBackgroundJob>();
         services.AddHostedService<MqttTopicsMetricsBackgroundJob>();
         //services.AddHostedService<TestMqttBackgroundJob>();

@@ -7,14 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MQTTnet" Version="4.3.1.873" />
-        <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.3.1.873" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\WbGateway.Infrastructure.Logging\WbGateway.Infrastructure.Logging.csproj" />
         <ProjectReference Include="..\WbGateway.Infrastructure.Metrics\WbGateway.Infrastructure.Metrics.csproj" />
+        <ProjectReference Include="..\WbGateway.Infrastructure.Mqtt\WbGateway.Infrastructure.Mqtt.csproj" />
     </ItemGroup>
 
     <ItemGroup>
