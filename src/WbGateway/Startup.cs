@@ -4,7 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using WbGateway.Implementations;
+using WbGateway.Application;
+using WbGateway.BackgroundServices;
 using WbGateway.Infrastructure.Metrics;
 using WbGateway.Infrastructure.Mqtt;
 
@@ -25,7 +26,8 @@ public class Startup
 
         services
             .AddMetrics()
-            .AddMqtt();
+            .AddMqtt()
+            .AddApplication();
 
         services.AddSwaggerGen(options =>
         {

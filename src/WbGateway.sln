@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Infrastructure.Mq
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Infrastructure.Mqtt", "WbGateway.Infrastructure.Mqtt\WbGateway.Infrastructure.Mqtt.csproj", "{CDFDF486-4F3A-4AF7-BC74-6485AF17504E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Application", "WbGateway.Application\WbGateway.Application.csproj", "{430A4ADF-69B9-4C96-88D2-F1F8984AF894}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{CDFDF486-4F3A-4AF7-BC74-6485AF17504E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDFDF486-4F3A-4AF7-BC74-6485AF17504E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDFDF486-4F3A-4AF7-BC74-6485AF17504E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{430A4ADF-69B9-4C96-88D2-F1F8984AF894}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{430A4ADF-69B9-4C96-88D2-F1F8984AF894}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{430A4ADF-69B9-4C96-88D2-F1F8984AF894}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{430A4ADF-69B9-4C96-88D2-F1F8984AF894}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

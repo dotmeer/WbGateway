@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\WbGateway.Application\WbGateway.Application.csproj" />
         <ProjectReference Include="..\WbGateway.Infrastructure.Logging\WbGateway.Infrastructure.Logging.csproj" />
         <ProjectReference Include="..\WbGateway.Infrastructure.Metrics\WbGateway.Infrastructure.Metrics.csproj" />
         <ProjectReference Include="..\WbGateway.Infrastructure.Mqtt\WbGateway.Infrastructure.Mqtt.csproj" />

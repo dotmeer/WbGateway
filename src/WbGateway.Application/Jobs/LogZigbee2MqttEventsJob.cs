@@ -1,36 +1,35 @@
-﻿using System.Threading;
+﻿using Microsoft.Extensions.Logging;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using WbGateway.Infrastructure.Mqtt.Abstractions;
 
-namespace WbGateway.Implementations;
+namespace WbGateway.Application.Jobs;
 
-internal sealed class TestMqttBackgroundJob : BackgroundService
+public sealed class LogZigbee2MqttEventsJob
 {
-    private readonly ILogger<TestMqttBackgroundJob> _logger;
+    private readonly ILogger<LogZigbee2MqttEventsJob> _logger;
 
     private readonly IMqttService _mqttService;
 
-    public TestMqttBackgroundJob(
-        ILogger<TestMqttBackgroundJob> logger,
+    public LogZigbee2MqttEventsJob(
+        ILogger<LogZigbee2MqttEventsJob> logger, 
         IMqttService mqttService)
     {
         _logger = logger;
         _mqttService = mqttService;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    public Task ExecuteAsync(CancellationToken cancellationToken)
     {
         return _mqttService.SubscribeAsync(
             new QueueConnection("zigbee2mqtt/+", "test"),
-            (message, token) =>
+            (message, ct) =>
             {
                 _logger.LogInformation(
                     $"{message.Topic}: {message.Payload}");
 
                 return Task.CompletedTask;
             },
-            stoppingToken);
+            cancellationToken);
     }
 }

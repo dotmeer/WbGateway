@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System.Threading;
 using System.Threading.Tasks;
-using WbGateway.Infrastructure.Metrics.Abstractions;
+using System.Threading;
 using WbGateway.Infrastructure.Mqtt.Abstractions;
+using Microsoft.Extensions.Logging;
+using WbGateway.Infrastructure.Metrics.Abstractions;
 
-namespace WbGateway.Implementations;
+namespace WbGateway.Application.Jobs;
 
-internal sealed class MqttTopicsMetricsBackgroundJob : BackgroundService
+public sealed class MqttDevicesControlsMetricsJob
 {
-    private readonly ILogger<MqttTopicsMetricsBackgroundJob> _logger;
+    private readonly ILogger<MqttDevicesControlsMetricsJob> _logger;
 
     private readonly IMetricsService _metricsService;
 
     private readonly IMqttService _mqttService;
 
-    public MqttTopicsMetricsBackgroundJob(
-        ILogger<MqttTopicsMetricsBackgroundJob> logger,
+    public MqttDevicesControlsMetricsJob(
+        ILogger<MqttDevicesControlsMetricsJob> logger,
         IMetricsService metricsService,
         IMqttService mqttService)
     {
@@ -27,11 +26,11 @@ internal sealed class MqttTopicsMetricsBackgroundJob : BackgroundService
         _mqttService = mqttService;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    public Task ExecuteAsync(CancellationToken stoppingToken)
     {
         return _mqttService.SubscribeAsync(
             new QueueConnection("/devices/+/controls/+", "prometheus"),
-            (message, token) =>
+            (message, ct) =>
             {
                 try
                 {

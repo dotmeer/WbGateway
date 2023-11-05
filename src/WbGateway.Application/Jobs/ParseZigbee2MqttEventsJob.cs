@@ -4,16 +4,15 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WbGateway.Infrastructure.Metrics.Abstractions;
 using WbGateway.Infrastructure.Mqtt.Abstractions;
 
-namespace WbGateway.Implementations;
+namespace WbGateway.Application.Jobs;
 
-internal sealed class Zigbee2MqttBackgroundJob : BackgroundService
+public sealed class ParseZigbee2MqttEventsJob
 {
-    private readonly ILogger<Zigbee2MqttBackgroundJob> _logger;
+    private readonly ILogger<ParseZigbee2MqttEventsJob> _logger;
 
     private readonly IMetricsService _metricsService;
 
@@ -21,9 +20,9 @@ internal sealed class Zigbee2MqttBackgroundJob : BackgroundService
 
     private readonly IDictionary<string, string?> _cachedValues;
 
-    public Zigbee2MqttBackgroundJob(
-        ILogger<Zigbee2MqttBackgroundJob> logger,
-        IMetricsService metricsService, 
+    public ParseZigbee2MqttEventsJob(
+        ILogger<ParseZigbee2MqttEventsJob> logger,
+        IMetricsService metricsService,
         IMqttService mqttService)
     {
         _logger = logger;
@@ -32,14 +31,14 @@ internal sealed class Zigbee2MqttBackgroundJob : BackgroundService
         _cachedValues = new ConcurrentDictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    public Task ExecuteAsync(CancellationToken stoppingToken)
     {
         return _mqttService.SubscribeAsync(
             new QueueConnection("zigbee2mqtt/+"),
             (message, token) => ReceivedMessageHandler(message, stoppingToken),
             stoppingToken);
     }
-    
+
     private async Task ReceivedMessageHandler(
         QueueMessage message,
         CancellationToken cancellationToken)
