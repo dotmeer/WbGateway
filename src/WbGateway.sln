@@ -5,23 +5,22 @@ VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6FCBAEF9-002D-47E9-A74E-DCB64B0DF739}"
 	ProjectSection(SolutionItems) = preProject
-		..\Dockerfile = ..\Dockerfile
 		..\ReadMe.md = ..\ReadMe.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WbGateway", "WbGateway\WbGateway.csproj", "{725B4CE1-05C5-4D07-BFCA-33191D2668D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WbGateway.Zigbee2Mqtt", "WbGateway.Zigbee2Mqtt\WbGateway.Zigbee2Mqtt.csproj", "{725B4CE1-05C5-4D07-BFCA-33191D2668D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Infrastructure.Logging", "WbGateway.Infrastructure.Logging\WbGateway.Infrastructure.Logging.csproj", "{887D61BD-81D9-4A47-8999-F742BD816D9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WbGateway.Infrastructure.Logging", "WbGateway.Infrastructure.Logging\WbGateway.Infrastructure.Logging.csproj", "{887D61BD-81D9-4A47-8999-F742BD816D9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Infrastructure.Metrics", "WbGateway.Infrastructure.Metrics\WbGateway.Infrastructure.Metrics.csproj", "{9B8A239C-8F35-42E8-BB6F-C57A6B356887}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WbGateway.Infrastructure.Metrics", "WbGateway.Infrastructure.Metrics\WbGateway.Infrastructure.Metrics.csproj", "{9B8A239C-8F35-42E8-BB6F-C57A6B356887}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Infrastructure.Metrics.Abstractions", "WbGateway.Infrastructure.Metrics.Abstractions\WbGateway.Infrastructure.Metrics.Abstractions.csproj", "{CF5C9877-0EB7-4F81-9943-A3C4314B3E41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WbGateway.Infrastructure.Metrics.Abstractions", "WbGateway.Infrastructure.Metrics.Abstractions\WbGateway.Infrastructure.Metrics.Abstractions.csproj", "{CF5C9877-0EB7-4F81-9943-A3C4314B3E41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Infrastructure.Mqtt.Abstractions", "WbGateway.Infrastructure.Mqtt.Abstractions\WbGateway.Infrastructure.Mqtt.Abstractions.csproj", "{29B886F5-500F-4B11-9BA1-157B8B66D05B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WbGateway.Infrastructure.Mqtt.Abstractions", "WbGateway.Infrastructure.Mqtt.Abstractions\WbGateway.Infrastructure.Mqtt.Abstractions.csproj", "{29B886F5-500F-4B11-9BA1-157B8B66D05B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Infrastructure.Mqtt", "WbGateway.Infrastructure.Mqtt\WbGateway.Infrastructure.Mqtt.csproj", "{CDFDF486-4F3A-4AF7-BC74-6485AF17504E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WbGateway.Infrastructure.Mqtt", "WbGateway.Infrastructure.Mqtt\WbGateway.Infrastructure.Mqtt.csproj", "{CDFDF486-4F3A-4AF7-BC74-6485AF17504E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbGateway.Application", "WbGateway.Application\WbGateway.Application.csproj", "{430A4ADF-69B9-4C96-88D2-F1F8984AF894}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WbGateway.Application", "WbGateway.Application\WbGateway.Application.csproj", "{430A4ADF-69B9-4C96-88D2-F1F8984AF894}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

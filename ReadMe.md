@@ -3,7 +3,7 @@
 ## Публикация и развертывание
 
 публикация докер-образа:   
-`docker build -t dotmeer/wbgateway:{tag} .`   
+`docker build -t dotmeer/wbgateway:{tag} . -f {running assembly file path}`   
 `docker login`   
 `docker push dotmeer/wbgateway:{tag}`
 

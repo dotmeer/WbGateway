@@ -1,4 +1,4 @@
 **/.vs/
 **/bin/
 **/obj/
-src/WbGateway/Properties/launchSettings.json
+**/launchSettings.json
