@@ -16,7 +16,7 @@ public static class InfrastructureMetricsExtensions
         return builder;
     }
 
-    public static IServiceCollection AddMetrics(
+    public static IServiceCollection SetupMetrics(
         this IServiceCollection services)
     {
         Prometheus.Metrics.DefaultRegistry.SetStaticLabels(
