@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using WbGateway.Application;
-using WbGateway.BackgroundServices;
 using WbGateway.Infrastructure.Metrics;
 using WbGateway.Infrastructure.Mqtt;
+using WbGateway.Zigbee2Mqtt.BackgroundServices;
 
-namespace WbGateway;
+namespace WbGateway.Zigbee2Mqtt;
 
 public class Startup
 {
@@ -25,9 +25,9 @@ public class Startup
             });
 
         services
-            .AddMetrics()
-            .AddMqtt()
-            .AddApplication();
+            .SetupMetrics()
+            .SetupMqtt()
+            .SetupApplication();
 
         services.AddSwaggerGen(options =>
         {

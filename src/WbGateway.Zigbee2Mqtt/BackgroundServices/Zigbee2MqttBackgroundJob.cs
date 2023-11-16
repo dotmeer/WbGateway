@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using WbGateway.Application.Jobs;
 
-namespace WbGateway.BackgroundServices;
+namespace WbGateway.Zigbee2Mqtt.BackgroundServices;
 
 internal sealed class Zigbee2MqttBackgroundJob : BackgroundService
 {

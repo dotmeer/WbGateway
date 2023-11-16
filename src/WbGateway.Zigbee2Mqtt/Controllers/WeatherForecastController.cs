@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WbGateway.Controllers
+namespace WbGateway.Zigbee2Mqtt.Controllers
 {
     [ApiController]
     [Route("[controller]")]

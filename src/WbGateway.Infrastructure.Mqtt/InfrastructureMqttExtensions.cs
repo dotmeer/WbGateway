@@ -5,7 +5,7 @@ namespace WbGateway.Infrastructure.Mqtt;
 
 public static class InfrastructureMqttExtensions
 {
-    public static IServiceCollection AddMqtt(this IServiceCollection services)
+    public static IServiceCollection SetupMqtt(this IServiceCollection services)
     {
         services.AddSingleton<IMqttService, MqttService>();
 

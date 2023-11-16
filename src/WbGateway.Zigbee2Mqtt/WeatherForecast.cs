@@ -1,6 +1,6 @@
 using System;
 
-namespace WbGateway;
+namespace WbGateway.Zigbee2Mqtt;
 
 public class WeatherForecast
 {

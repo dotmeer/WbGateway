@@ -5,7 +5,7 @@ namespace WbGateway.Application;
 
 public static class ApplicationExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection SetupApplication(this IServiceCollection services)
     {
         services
             .AddSingleton<LogZigbee2MqttEventsJob>()
